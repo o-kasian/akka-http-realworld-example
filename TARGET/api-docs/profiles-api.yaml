@@ -1,0 +1,174 @@
+openapi: 3.0.3
+info:
+  title: Realworld API - Profiles
+  description: API specification for the profiles resource in the Realworld application
+  version: 1.0.0
+  
+servers:
+  - url: /api
+    description: Default API server
+
+components:
+  schemas:
+    Profile:
+      type: object
+      properties:
+        username:
+          type: string
+          description: The username of the profile
+          example: "jake"
+        bio:
+          type: string
+          nullable: true
+          description: The bio of the user
+          example: "I work at statefarm"
+        image:
+          type: string
+          nullable: true
+          description: URL to the profile image
+          example: "https://static.productionready.io/images/smiley-cyrus.jpg"
+        following:
+          type: boolean
+          description: Whether the current user is following this profile
+          example: false
+      required:
+        - username
+        - following
+    
+    ProfileResponse:
+      type: object
+      properties:
+        profile:
+          $ref: '#/components/schemas/Profile'
+      required:
+        - profile
+    
+    GenericErrorModel:
+      type: object
+      properties:
+        errors:
+          type: object
+          properties:
+            body:
+              type: array
+              items:
+                type: string
+              example: ["Profile not found"]
+  
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token for authentication
+
+paths:
+  /profiles/{username}:
+    get:
+      summary: Get a profile
+      description: Get a profile of a user of the system. Auth is optional
+      tags:
+        - Profile
+      parameters:
+        - name: username
+          in: path
+          description: Username of the profile to get
+          required: true
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Profile returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorModel'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorModel'
+        '404':
+          description: Profile not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorModel'
+  
+  /profiles/{username}/follow:
+    post:
+      summary: Follow a user
+      description: Follow a user by username
+      tags:
+        - Profile
+      parameters:
+        - name: username
+          in: path
+          description: Username of the profile to follow
+          required: true
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successfully followed user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorModel'
+        '404':
+          description: User to follow not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorModel'
+    
+    delete:
+      summary: Unfollow a user
+      description: Unfollow a user by username
+      tags:
+        - Profile
+      parameters:
+        - name: username
+          in: path
+          description: Username of the profile to unfollow
+          required: true
+          schema:
+            type: string
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Successfully unfollowed user
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProfileResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorModel'
+        '404':
+          description: User to unfollow not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenericErrorModel'
