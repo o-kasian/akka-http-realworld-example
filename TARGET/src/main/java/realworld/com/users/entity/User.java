@@ -8,6 +8,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.sql.Timestamp;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -44,6 +46,36 @@ public class User {
     @Column(name = "updated_at", nullable = false)
     @UpdateTimestamp
     private Timestamp updatedAt;
+    
+    // Articles written by user
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Article> articles = new HashSet<>();
+    
+    // Comments written by user
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Comment> comments = new HashSet<>();
+    
+    // Articles favorited by user
+    @ManyToMany
+    @JoinTable(
+        name = "user_favorite_articles",
+        joinColumns = @JoinColumn(name = "user_id"),
+        inverseJoinColumns = @JoinColumn(name = "article_id")
+    )
+    private Set<Article> favoritedArticles = new HashSet<>();
+    
+    // Users that this user follows
+    @ManyToMany
+    @JoinTable(
+        name = "user_follows",
+        joinColumns = @JoinColumn(name = "follower_id"),
+        inverseJoinColumns = @JoinColumn(name = "followed_id")
+    )
+    private Set<User> following = new HashSet<>();
+    
+    // Users following this user
+    @ManyToMany(mappedBy = "following")
+    private Set<User> followers = new HashSet<>();
     
     // Validation logic from Scala's require statements
     @PrePersist
