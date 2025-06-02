@@ -6,10 +6,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import realworld.com.articles.comments.entity.Comment;
-import realworld.com.articles.entity.Article;
-import realworld.com.articles.entity.Favorite;
-import realworld.com.profile.entity.UserFollower;
+import realworld.com.articles.comments.entity.CommentEntity;
+import realworld.com.articles.entity.ArticleEntity;
+import realworld.com.articles.entity.FavoriteEntity;
+import realworld.com.profile.entity.UserFollowerEntity;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -54,19 +54,19 @@ public class UserEntity {
     // Relationships
     
     @OneToMany(mappedBy = "authorId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Article> articles = new ArrayList<>();
+    private List<ArticleEntity> articles = new ArrayList<>();
     
     @OneToMany(mappedBy = "authorId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Comment> comments = new ArrayList<>();
+    private List<CommentEntity> comments = new ArrayList<>();
     
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Favorite> favorites = new ArrayList<>();
+    private List<FavoriteEntity> favorites = new ArrayList<>();
     
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserFollower> following = new ArrayList<>();
+    private List<UserFollowerEntity> following = new ArrayList<>();
     
     @OneToMany(mappedBy = "followeeId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<UserFollower> followers = new ArrayList<>();
+    private List<UserFollowerEntity> followers = new ArrayList<>();
     
     // Validation logic from Scala's require statements
     @PrePersist
